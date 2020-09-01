@@ -1,3 +1,4 @@
+""" Importing the Priority Queue """
 from queue import PriorityQueue
 import pygame
 
@@ -11,20 +12,20 @@ WIN = pygame.display.set_mode((WIDTH, WIDTH))
 # Colors
 WHITE = (255, 255, 255)
 
-# Draw method
 def draw(win):
+    """ Draws elements on the screen """
     win.fill(WHITE)
     pygame.display.update()
 
-# Main method
 def main(win):
+    """ Main method which handles all the function calls """
     run = True
 
     # Main loop
     while run:
         # Drawing the screen
         draw(win)
-    
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False

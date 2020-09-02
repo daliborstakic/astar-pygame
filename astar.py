@@ -46,6 +46,16 @@ class Node():
         return False
 
 
+def get_clicked_pos(pos, rows, width):
+    """ Get the row and column based on click position """
+    gap = width // rows
+    x, y = pos
+
+    row = y // gap
+    col = x // gap
+
+    return row, col
+
 def make_grid(rows, width):
     """ Initializng the grid """
     grid = []

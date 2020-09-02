@@ -67,20 +67,31 @@ def draw_grid(win, width, rows):
         for j in range(rows):
             pygame.draw.line(win, GRAY, (j * gap, 0), (j * gap, width))
 
-
-def draw(win):
+def draw(win, grid, width, rows):
     """ Draws elements on the screen """
     win.fill(WHITE)
+
+    """ Drawing the nodes """
+    for row in grid:
+        for node in row:
+            node.draw(win)
+
+    draw_grid(win, width, rows) # Drawing the grid
+
     pygame.display.update()
 
 def main(win):
     """ Main method which handles the function calls, also handles the input """
     run = True
 
+    ROWS = 20 # Rows val
+
+    grid = make_grid(ROWS, WIDTH)
+
     # Main loop
     while run:
         # Drawing the screen
-        draw(win)
+        draw(win, grid, WIDTH, ROWS)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

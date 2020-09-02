@@ -15,6 +15,9 @@ GRAY = (200, 200, 200)
 BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
 BLACK = (0, 0, 0)
+GREEN = (0, 255, 0)
+PURPLE = (255, 0, 255)
+RED = (255, 0, 0)
 
 class Node():
     """ Class Node represents single cell in the grid """
@@ -28,6 +31,10 @@ class Node():
         self.width = width
         self.neighbours = []
         self.total_rows = total_rows
+
+    def get_pos(self):
+        """ Returns the position in the grid """
+        return self.row, self.col
 
     def is_color(self, color):
         """ Checks the type of node by color """
@@ -49,6 +56,12 @@ class Node():
         return False
 
 
+def h(p1, p2):
+    """ Aproximated distance """
+    x1, y1 = p1
+    x2, y2 = p2
+    return abs(x1 - x2) + abs(y1 - y2)
+
 def get_clicked_pos(pos, rows, width):
     """ Get the row and column based on click position """
     gap = width // rows
@@ -58,6 +71,9 @@ def get_clicked_pos(pos, rows, width):
     col = y // gap
 
     return row, col
+
+def reconstruct_path(came_from, current, draw):
+    pass
 
 def make_grid(rows, width):
     """ Initializng the grid """
@@ -79,6 +95,57 @@ def draw_grid(win, width, rows):
         pygame.draw.line(win, GRAY, (0, i * gap), (width, i * gap))
         for j in range(rows):
             pygame.draw.line(win, GRAY, (j * gap, 0), (j * gap, width))
+
+def algorithm(draw, grid, start, end):
+    """ The A* Pathfinding algorithm """
+    count = 0
+    open_set = PriorityQueue() # Setting the inital PriorityQueue
+    open_set.put((0, count, start))
+    came_from = {} # This actually represents the shortest path
+
+    g_score = {spot: float("inf") for row in grid for spot in row} # Infinite g_score
+    g_score[start] = 0
+    f_score = {spot: float("inf") for row in grid for spot in row} # Infinite f_score
+    f_score[start] = h(start.get_pos(), end_get_pos())
+
+    open_set_hash = {start} # Hash for getting values fron open_set
+
+    while not open_set.empty():
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+
+        current = open_set.get()[2] # Get the current node
+        open_set_hash.remove(current)
+
+        if current == end: # If it reached the end
+            reconstruct_path(came_from, end, draw)
+            end.set_color(YELLOW)
+            start.set_color(BLUE)
+            return True
+
+        for neighbour in current.neighbours: # Looping through every neighbour
+            temp_g_score = g_score[current] + 1
+
+            # Calculating the neighbours f_score
+            if temp_g_score < g_score[neighbour]:
+                came_from[neighbour] = current
+                g_score[neighbour] = temp_g_score
+                f_score[neighbour] = temp_g_score + h(neighbour.get_pos(), end.get_pos())
+
+                if neighbour not in open_set_hash:
+                    count += 1
+                    open_set.put(neighbour)
+                    open_set_hash.add(neighbour)
+                    neighbour.set_color(GREEN)
+
+        draw()
+
+        if current != start: # Closes nodes
+            current.set_color(RED)
+
+        return False
+
 
 def draw(win, grid, width, rows):
     """ Draws elements on the screen """

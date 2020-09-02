@@ -1,6 +1,5 @@
 """ Importing the Priority Queue """
 from queue import PriorityQueue
-import math
 import pygame
 
 # Pygame initialization

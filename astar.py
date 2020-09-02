@@ -12,6 +12,9 @@ WIN = pygame.display.set_mode((WIDTH, WIDTH))
 # Colors
 WHITE = (255, 255, 255)
 GRAY = (200, 200, 200)
+BLUE = (0, 0, 255)
+YELLOW = (255, 255, 0)
+BLACK = (0, 0, 0)
 
 class Node():
     """ Class Node represents single cell in the grid """
@@ -51,8 +54,8 @@ def get_clicked_pos(pos, rows, width):
     gap = width // rows
     x, y = pos
 
-    row = y // gap
-    col = x // gap
+    row = x // gap
+    col = y // gap
 
     return row, col
 
@@ -66,7 +69,7 @@ def make_grid(rows, width):
         for j in range(rows):
             node = Node(i, j, gap, rows) # Adding nodes to every cell
             grid[i].append(node)
-    
+
     return grid
 
 def draw_grid(win, width, rows):
@@ -94,7 +97,11 @@ def main(win):
     """ Main method which handles the function calls, also handles the input """
     run = True
 
-    ROWS = 20 # Rows val
+    ROWS = 50 # Rows val
+
+    # Start and end nodes
+    start = None
+    end = None
 
     grid = make_grid(ROWS, WIDTH)
 
@@ -106,6 +113,20 @@ def main(win):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+
+            if pygame.mouse.get_pressed()[0]: # Left click
+                pos = pygame.mouse.get_pos()
+                row, col = get_clicked_pos(pos, ROWS, WIDTH)
+                spot = grid[row][col]
+
+                if not start and spot != end:
+                    start = spot
+                    start.set_color(BLUE)
+                elif not end and spot != start:
+                    end = spot
+                    end.set_color(YELLOW)
+                elif spot != end and spot != start:
+                    spot.set_color(BLACK)
 
     # Game quit
     pygame.quit()

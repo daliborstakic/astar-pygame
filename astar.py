@@ -128,6 +128,17 @@ def main(win):
                 elif spot != end and spot != start:
                     spot.set_color(BLACK)
 
+            if pygame.mouse.get_pressed()[2]: # Right click
+                pos = pygame.mouse.get_pos()
+                row, col = get_clicked_pos(pos, ROWS, WIDTH)
+                spot = grid[row][col]
+                spot.set_color(WHITE)
+
+                if spot == start:
+                    start = None
+                elif spot == end:      
+                    end = None              
+
     # Game quit
     pygame.quit()
 

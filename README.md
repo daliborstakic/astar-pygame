@@ -1,7 +1,7 @@
 # A* Algorithm Visualization
 
 ## What I've done
-I've made a program which can visualize the way this algorithm works. It was done in Pygame, using a grid system.
+I've made a program which can visualize the way this algorithm works. It was done in ***Pygame***, using a grid system.
 
 ## What I hope to implement
 Nothing much.

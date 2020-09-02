@@ -44,6 +44,19 @@ class Node():
         """ Dunder method __lt__ if a tie happens """
         return False
 
+
+def make_grid(rows, width):
+    """ Initializng the grid """
+    grid = []
+    gap = width // rows
+
+    for i in range(rows):
+        grid.append([])
+        for j in range(rows):
+            node = Node(i, j, gap, rows) # Adding nodes to every cell
+            grid[i].append(node)
+
+
 def draw(win):
     """ Draws elements on the screen """
     win.fill(WHITE)

@@ -11,6 +11,7 @@ WIN = pygame.display.set_mode((WIDTH, WIDTH))
 
 # Colors
 WHITE = (255, 255, 255)
+GRAY = (200, 200, 200)
 
 class Node():
     """ Class Node represents single cell in the grid """
@@ -55,6 +56,16 @@ def make_grid(rows, width):
         for j in range(rows):
             node = Node(i, j, gap, rows) # Adding nodes to every cell
             grid[i].append(node)
+    
+    return grid
+
+def draw_grid(win, width, rows):
+    """ Draws the grid """
+    gap = width // rows
+    for i in range(rows):
+        pygame.draw.line(win, GRAY, (0, i * gap), (width, i * gap))
+        for j in range(rows):
+            pygame.draw.line(win, GRAY, (j * gap, 0), (j * gap, width))
 
 
 def draw(win):

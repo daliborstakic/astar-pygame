@@ -1,5 +1,6 @@
 """ Importing the Priority Queue """
 from queue import PriorityQueue
+import math
 import pygame
 
 # Pygame initialization
@@ -8,6 +9,7 @@ pygame.init()
 # Screen
 WIDTH = 500
 WIN = pygame.display.set_mode((WIDTH, WIDTH))
+pygame.display.set_caption("A* Pathfinding Algorithm")
 
 # Colors
 WHITE = (255, 255, 255)
@@ -49,18 +51,19 @@ class Node():
         pygame.draw.rect(win, self.color, (self.x, self.y , self.width, self.width))
 
     def update_neighbours(self, grid):
-        self.neighbors = []
-		if self.row < self.total_rows - 1 and not grid[self.row + 1][self.col].is_color(BLACK): # DOWN
-			self.neighbors.append(grid[self.row + 1][self.col])
+        """ Sets neighbouring nodes """
+        self.neighbours = []
+        if self.row < self.total_rows - 1 and not grid[self.row + 1][self.col].is_color(BLACK): # Down
+            self.neighbours.append(grid[self.row + 1][self.col])
 
-		if self.row > 0 and not grid[self.row - 1][self.col].is_color(BLACK): # UP
-			self.neighbors.append(grid[self.row - 1][self.col])
+        if self.row > 0 and not grid[self.row - 1][self.col].is_color(BLACK): # Up
+            self.neighbours.append(grid[self.row - 1][self.col])
 
-		if self.col < self.total_rows - 1 and not grid[self.row][self.col + 1].is_color(BLACK): # RIGHT
-			self.neighbors.append(grid[self.row][self.col + 1])
+        if self.col < self.total_rows - 1 and not grid[self.row][self.col + 1].is_color(BLACK): # Right
+            self.neighbours.append(grid[self.row][self.col + 1])
 
-		if self.col > 0 and not grid[self.row][self.col - 1].is_color(BLACK): # LEFT
-			self.neighbors.append(grid[self.row][self.col - 1])
+        if self.col > 0 and not grid[self.row][self.col - 1].is_color(BLACK): # Left
+            self.neighbours.append(grid[self.row][self.col - 1])
 
     def __lt__(self, other):
         """ Dunder method __lt__ if a tie happens """
@@ -84,6 +87,7 @@ def get_clicked_pos(pos, rows, width):
     return row, col
 
 def reconstruct_path(came_from, current, draw):
+    """ Draws the path """
     while current in came_from:
         current = came_from[current]
         current.set_color(PURPLE)
@@ -117,10 +121,10 @@ def algorithm(draw, grid, start, end):
     open_set.put((0, count, start))
     came_from = {} # This actually represents the shortest path
 
-    g_score = {spot: float("inf") for row in grid for spot in row} # Infinite g_score
+    g_score = {node: float("inf") for row in grid for node in row} # Infinite g_score
     g_score[start] = 0
-    f_score = {spot: float("inf") for row in grid for spot in row} # Infinite f_score
-    f_score[start] = h(start.get_pos(), end_get_pos())
+    f_score = {node: float("inf") for row in grid for node in row} # Infinite f_score
+    f_score[start] = h(start.get_pos(), end.get_pos())
 
     open_set_hash = {start} # Hash for getting values fron open_set
 
@@ -149,7 +153,7 @@ def algorithm(draw, grid, start, end):
 
                 if neighbour not in open_set_hash:
                     count += 1
-                    open_set.put(neighbour)
+                    open_set.put((f_score[neighbour], count, neighbour))
                     open_set_hash.add(neighbour)
                     neighbour.set_color(GREEN)
 
@@ -158,7 +162,7 @@ def algorithm(draw, grid, start, end):
         if current != start: # Closes nodes
             current.set_color(RED)
 
-        return False
+    return False
 
 
 def draw(win, grid, width, rows):
@@ -198,27 +202,40 @@ def main(win):
             if pygame.mouse.get_pressed()[0]: # Left click
                 pos = pygame.mouse.get_pos()
                 row, col = get_clicked_pos(pos, ROWS, WIDTH)
-                spot = grid[row][col]
+                node = grid[row][col]
 
-                if not start and spot != end:
-                    start = spot
+                if not start and node != end:
+                    start = node
                     start.set_color(BLUE)
-                elif not end and spot != start:
-                    end = spot
+                elif not end and node != start:
+                    end = node
                     end.set_color(YELLOW)
-                elif spot != end and spot != start:
-                    spot.set_color(BLACK)
+                elif node != end and node != start:
+                    node.set_color(BLACK)
 
             if pygame.mouse.get_pressed()[2]: # Right click
                 pos = pygame.mouse.get_pos()
                 row, col = get_clicked_pos(pos, ROWS, WIDTH)
-                spot = grid[row][col]
-                spot.set_color(WHITE)
+                node = grid[row][col]
+                node.set_color(WHITE)
 
-                if spot == start:
+                if node == start:
                     start = None
-                elif spot == end:      
-                    end = None              
+                elif node == end:      
+                    end = None
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE and start and end:
+                    for row in grid:
+                        for node in row:
+                            node.update_neighbours(grid)
+
+                    algorithm(lambda: draw(win, grid, WIDTH, ROWS), grid, start, end)
+
+                if event.key == pygame.K_c:
+                    start = None
+                    end = None
+                    grid = make_grid(ROWS, WIDTH)
 
     # Game quit
     pygame.quit()

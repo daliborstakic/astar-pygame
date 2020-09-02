@@ -48,7 +48,7 @@ class Node():
         """ Drawing the individual nodes """
         pygame.draw.rect(win, self.color, (self.x, self.y , self.width, self.width))
 
-    def update_neighbours(self):
+    def update_neighbours(self, grid):
         self.neighbors = []
 		if self.row < self.total_rows - 1 and not grid[self.row + 1][self.col].is_color(BLACK): # DOWN
 			self.neighbors.append(grid[self.row + 1][self.col])
@@ -84,7 +84,10 @@ def get_clicked_pos(pos, rows, width):
     return row, col
 
 def reconstruct_path(came_from, current, draw):
-    pass
+    while current in came_from:
+        current = came_from[current]
+        current.set_color(PURPLE)
+        draw()
 
 def make_grid(rows, width):
     """ Initializng the grid """
